@@ -8,9 +8,15 @@
 - **Usuario de prueba:** no requiere (los datos se guardan de forma local en tu dispositivo)
 
 ## 2. Capturas
-| Inicio | En uso | Con la IA trabajando |
-|---|---|---|
-| ![](evidencias/E3-celular.png) | ![](evidencias/E1-despues.png) | ![](evidencias/E5-app.png) |
+<img width="959" height="480" alt="image" src="https://github.com/user-attachments/assets/81b251b6-99ba-4c24-9c48-e0a88136ae38" />
+<img width="959" height="468" alt="image" src="https://github.com/user-attachments/assets/63069d41-16ce-4f45-9b03-9e2c11206252" />
+<img width="959" height="440" alt="image" src="https://github.com/user-attachments/assets/1951605b-c93e-45ee-8819-1672aeac678f" />
+<img width="959" height="457" alt="image" src="https://github.com/user-attachments/assets/5eff00c7-a8a9-4ff4-b756-056fa3e5acf4" />
+<img width="959" height="468" alt="image" src="https://github.com/user-attachments/assets/77ded145-2b75-436f-9218-b1cca0576139" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-10-02 at 9 31 17 AM" src="https://github.com/user-attachments/assets/9c60ccc8-2a23-491a-94e5-c0153d394139" />
+
+
+
 
 ## 3. Qué hace
 - Registra cargas de combustible con fecha, monto, galones y kilometraje.
