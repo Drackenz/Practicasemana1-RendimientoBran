@@ -1,5 +1,5 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, Minus, BarChart2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, TrendingDown, Minus, BarChart2, Calendar, Fuel, DollarSign, Gauge } from 'lucide-react';
 import { ResumenMensual } from '../types';
 
 interface Props {
@@ -7,6 +7,8 @@ interface Props {
 }
 
 export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
+  const [mesSeleccionado, setMesSeleccionado] = useState<string | null>(null);
+
   if (datosMensuales.length === 0) {
     return (
       <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 text-center">
@@ -25,7 +27,6 @@ export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
 
   // Obtenemos el valor máximo para escalar la altura de las barras del SVG
   const maxRendimiento = Math.max(...datosMensuales.map((d) => d.kmPorGalonPromedio), 10);
-  const minRendimiento = Math.min(...datosMensuales.map((d) => d.kmPorGalonPromedio));
   
   // Cálculo de tendencia entre el último mes y el anterior
   const ultimoMes = datosMensuales[datosMensuales.length - 1];
@@ -33,6 +34,9 @@ export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
   const diferenciaMesAnterior = penultimoMes
     ? ultimoMes.kmPorGalonPromedio - penultimoMes.kmPorGalonPromedio
     : null;
+
+  // Mes activo en la tarjeta de detalle (por defecto el último)
+  const detalleMes = datosMensuales.find((d) => d.mesClave === mesSeleccionado) || ultimoMes;
 
   return (
     <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
@@ -47,7 +51,7 @@ export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
             </h2>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Evolución del rendimiento en kilómetros por galón (km/gal)
+            Evolución del rendimiento en kilómetros por galón (km/gal). Toca una barra para ver detalles.
           </p>
         </div>
 
@@ -76,7 +80,7 @@ export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
         )}
       </div>
 
-      {/* Gráfico de barras responsivo usando SVG nativo sin librerías pesadas */}
+      {/* Gráfico de barras interactivo optimizado para móvil */}
       <div className="w-full pt-4 pb-2">
         <div className="h-48 sm:h-56 flex items-end justify-between gap-3 sm:gap-6 px-2 border-b border-slate-800 relative">
           {/* Líneas guía de fondo */}
@@ -87,25 +91,28 @@ export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
           </div>
 
           {datosMensuales.map((item, index) => {
-            // Escalar la altura proporcionalmente: mínimo 12% para que sea visible siempre
             const alturaPorcentaje = Math.max(
               Math.round((item.kmPorGalonPromedio / (maxRendimiento * 1.15)) * 100),
-              12
+              14
             );
+            const esSeleccionado = detalleMes?.mesClave === item.mesClave;
             const esUltimo = index === datosMensuales.length - 1;
 
             return (
-              <div
+              <button
                 key={item.mesClave}
-                className="flex-1 flex flex-col items-center justify-end h-full group relative z-10"
+                onClick={() => setMesSeleccionado(item.mesClave)}
+                className="flex-1 flex flex-col items-center justify-end h-full group relative z-10 cursor-pointer focus:outline-none"
               >
                 {/* Etiqueta flotante con el valor exacto sobre la barra */}
                 <div className="mb-2 text-center transition-transform group-hover:-translate-y-1">
                   <span
-                    className={`text-xs font-bold font-mono px-1.5 py-0.5 rounded ${
-                      esUltimo
-                        ? 'bg-indigo-600 text-white shadow-sm'
-                        : 'bg-slate-800 text-slate-200'
+                    className={`text-xs font-bold font-mono px-2 py-0.5 rounded-md transition-colors ${
+                      esSeleccionado
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
+                        : esUltimo
+                        ? 'bg-slate-800 text-indigo-300'
+                        : 'bg-slate-800 text-slate-300'
                     }`}
                   >
                     {item.kmPorGalonPromedio.toFixed(1)}
@@ -119,37 +126,29 @@ export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
                 <div className="w-full max-w-[56px] flex justify-center">
                   <div
                     style={{ height: `${alturaPorcentaje}%` }}
-                    className={`w-full rounded-t-lg transition-all duration-300 relative ${
-                      esUltimo
-                        ? 'bg-gradient-to-t from-indigo-600 to-cyan-400 shadow-lg shadow-indigo-500/20'
-                        : 'bg-gradient-to-t from-slate-700 to-slate-500 hover:from-slate-600 hover:to-indigo-400'
+                    className={`w-full rounded-t-xl transition-all duration-200 relative ${
+                      esSeleccionado
+                        ? 'bg-gradient-to-t from-indigo-600 via-indigo-500 to-cyan-400 shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-400'
+                        : 'bg-gradient-to-t from-slate-800 to-slate-600 hover:from-slate-700 hover:to-indigo-400'
                     }`}
                   >
-                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 rounded-t-lg transition-opacity" />
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 rounded-t-xl transition-opacity" />
                   </div>
                 </div>
-
-                {/* Detalle al hacer hover / tooltip accesible */}
-                <div className="absolute bottom-16 hidden group-hover:flex flex-col bg-slate-950 border border-slate-700 text-slate-200 text-[11px] p-2.5 rounded-lg shadow-2xl z-20 pointer-events-none whitespace-nowrap">
-                  <span className="font-semibold text-white">{item.mesNombre}</span>
-                  <span className="text-slate-400">Distancia: {item.totalKm.toLocaleString()} km</span>
-                  <span className="text-slate-400">Consumo: {item.totalGalones} gal</span>
-                  <span className="text-emerald-400 font-semibold">Costo: ${(item.costoPorKmPromedio).toFixed(4)}/km</span>
-                </div>
-              </div>
+              </button>
             );
           })}
         </div>
 
         {/* Eje X con los nombres de los meses */}
         <div className="flex justify-between gap-3 sm:gap-6 px-2 mt-2">
-          {datosMensuales.map((item, index) => {
-            const esUltimo = index === datosMensuales.length - 1;
+          {datosMensuales.map((item) => {
+            const esSeleccionado = detalleMes?.mesClave === item.mesClave;
             return (
               <div key={item.mesClave} className="flex-1 text-center">
                 <span
-                  className={`text-xs block font-medium ${
-                    esUltimo ? 'text-indigo-400 font-bold' : 'text-slate-400'
+                  className={`text-xs block font-medium transition-colors ${
+                    esSeleccionado ? 'text-indigo-400 font-bold' : 'text-slate-400'
                   }`}
                 >
                   {item.mesNombre}
@@ -163,24 +162,53 @@ export const GraficoMensual: React.FC<Props> = ({ datosMensuales }) => {
         </div>
       </div>
 
-      {/* Tarjetas resumen del mes más reciente */}
-      {ultimoMes && (
-        <div className="mt-4 pt-3 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-          <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase tracking-wider text-slate-400 block">Mes actual</span>
-            <span className="text-xs font-semibold text-white">{ultimoMes.mesNombre}</span>
+      {/* Tarjeta de detalle interactiva del mes seleccionado */}
+      {detalleMes && (
+        <div className="mt-4 pt-3 border-t border-slate-800/80">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+              Detalle del mes: <strong className="text-white normal-case">{detalleMes.mesNombre}</strong>
+            </span>
+            <span className="text-[10px] text-slate-500">
+              {detalleMes.cantidadCargas} {detalleMes.cantidadCargas === 1 ? 'carga registrada' : 'cargas registradas'}
+            </span>
           </div>
-          <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase tracking-wider text-slate-400 block">Rendimiento</span>
-            <span className="text-xs font-bold text-indigo-400 font-mono">{ultimoMes.kmPorGalonPromedio} km/gal</span>
-          </div>
-          <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase tracking-wider text-slate-400 block">Costo prom/km</span>
-            <span className="text-xs font-bold text-emerald-400 font-mono">${ultimoMes.costoPorKmPromedio.toFixed(4)}</span>
-          </div>
-          <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase tracking-wider text-slate-400 block">Km recorridos</span>
-            <span className="text-xs font-semibold text-slate-200 font-mono">{ultimoMes.totalKm.toLocaleString()} km</span>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+            <div className="bg-slate-950/70 p-2.5 rounded-xl border border-slate-800">
+              <span className="text-[10px] uppercase tracking-wider text-slate-400 block flex items-center justify-center gap-1">
+                <Gauge className="w-3 h-3 text-indigo-400" /> Rendimiento
+              </span>
+              <span className="text-sm font-bold text-indigo-400 font-mono">
+                {detalleMes.kmPorGalonPromedio} <span className="text-[10px] font-normal text-slate-400">km/gal</span>
+              </span>
+            </div>
+
+            <div className="bg-slate-950/70 p-2.5 rounded-xl border border-slate-800">
+              <span className="text-[10px] uppercase tracking-wider text-slate-400 block flex items-center justify-center gap-1">
+                <DollarSign className="w-3 h-3 text-emerald-400" /> Costo / km
+              </span>
+              <span className="text-sm font-bold text-emerald-400 font-mono">
+                ${detalleMes.costoPorKmPromedio.toFixed(4)}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/70 p-2.5 rounded-xl border border-slate-800">
+              <span className="text-[10px] uppercase tracking-wider text-slate-400 block">Distancia total</span>
+              <span className="text-sm font-semibold text-white font-mono">
+                {detalleMes.totalKm.toLocaleString()} <span className="text-[10px] font-normal text-slate-400">km</span>
+              </span>
+            </div>
+
+            <div className="bg-slate-950/70 p-2.5 rounded-xl border border-slate-800">
+              <span className="text-[10px] uppercase tracking-wider text-slate-400 block flex items-center justify-center gap-1">
+                <Fuel className="w-3 h-3 text-amber-400" /> Total galones
+              </span>
+              <span className="text-sm font-semibold text-slate-200 font-mono">
+                {detalleMes.totalGalones.toFixed(2)} <span className="text-[10px] font-normal text-slate-400">gal</span>
+              </span>
+            </div>
           </div>
         </div>
       )}
