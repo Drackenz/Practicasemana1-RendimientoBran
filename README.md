@@ -25,9 +25,16 @@ Aplicación web móvil para personas que utilizan moto o carro todos los días y
 
 4. **Persistencia Local y Respaldo (M2):**
    - Almacenamiento automático y seguro en `localStorage` del navegador.
-   - 3 cargas de ejemplo iniciales precargadas para probar la app al instante.
    - Exportación de la bitácora a formato **CSV** (compatible con Excel / Google Sheets).
    - Exportación a formato **JSON** (para respaldo y migración).
+
+5. **Experiencia de Uso en Celular (M3):**
+   - Adaptada para pantallas estrechas desde **320 px de ancho** y operable con una sola mano.
+   - Contraste optimizado para lectura bajo el sol en moto/carro; tipografía **nunca menor a 16 px**.
+   - Todos los campos con etiquetas visibles sobre los campos.
+   - Jerarquía visual estricta: un único botón principal destacado (**«Guardar carga»**).
+   - Estado vacío acogedor con invitación clara a registrar la primera carga.
+   - Mensajes de éxito y error visibles, en español coloquial y sin tecnicismos.
 
 ---
 

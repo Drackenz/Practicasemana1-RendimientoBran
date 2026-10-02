@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { PlusCircle, Fuel, DollarSign, Gauge, Calendar, AlertCircle } from 'lucide-react';
+import { PlusCircle, Fuel, DollarSign, Gauge, Calendar, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { CargaCombustible } from '../types';
 
 interface Props {
   onAgregarCarga: (carga: Omit<CargaCombustible, 'id'>) => void;
   ultimoKilometraje?: number | null;
+  mensajeExito?: string | null;
 }
 
-export const FormularioCarga: React.FC<Props> = ({ onAgregarCarga, ultimoKilometraje }) => {
-  // Fecha predeterminada de hoy en formato local YYYY-MM-DD
+export const FormularioCarga: React.FC<Props> = ({
+  onAgregarCarga,
+  ultimoKilometraje,
+  mensajeExito,
+}) => {
   const hoy = new Date().toISOString().split('T')[0];
 
   const [fecha, setFecha] = useState(hoy);
@@ -25,28 +29,27 @@ export const FormularioCarga: React.FC<Props> = ({ onAgregarCarga, ultimoKilomet
     const galonesNum = parseFloat(galones);
     const kmNum = parseFloat(kilometraje);
 
-    // Validaciones estrictas para evitar datos corruptos
+    // Validaciones en español claro, sin términos técnicos
     if (!fecha) {
-      setError('Por favor selecciona una fecha válida.');
+      setError('Por favor indica qué día hiciste la carga.');
       return;
     }
     if (isNaN(kmNum) || kmNum <= 0) {
-      setError('El kilometraje del tablero debe ser un número mayor a 0.');
+      setError('Escribe el número de kilómetros que marca tu tablero.');
       return;
     }
     if (isNaN(galonesNum) || galonesNum <= 0) {
-      setError('Los galones deben ser mayores a 0.');
+      setError('Escribe cuántos galones de combustible le pusiste al tanque.');
       return;
     }
     if (isNaN(montoNum) || montoNum <= 0) {
-      setError('El monto pagado debe ser mayor a $0.');
+      setError('Escribe cuánto dinero pagaste en total.');
       return;
     }
 
-    // Advertencia no bloqueante si el usuario ingresa un km menor al último conocido
     if (ultimoKilometraje !== undefined && ultimoKilometraje !== null && kmNum <= ultimoKilometraje) {
       const confirmar = window.confirm(
-        `El kilometraje ingresado (${kmNum.toLocaleString()} km) es igual o menor al último registrado (${ultimoKilometraje.toLocaleString()} km). ¿Deseas guardarlo de todas formas? (Esto puede ser una carga pasada).`
+        `El kilometraje que pusiste (${kmNum.toLocaleString()} km) es igual o menor al anterior (${ultimoKilometraje.toLocaleString()} km). ¿Deseas guardarlo de todas formas?`
       );
       if (!confirmar) return;
     }
@@ -58,7 +61,6 @@ export const FormularioCarga: React.FC<Props> = ({ onAgregarCarga, ultimoKilomet
       kilometraje: kmNum,
     });
 
-    // Limpiar campos para la próxima carga, manteniendo la fecha de hoy
     setMonto('');
     setGalones('');
     setKilometraje('');
@@ -67,111 +69,145 @@ export const FormularioCarga: React.FC<Props> = ({ onAgregarCarga, ultimoKilomet
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur-sm"
+      className="bg-slate-900 border-2 border-slate-700 rounded-3xl p-5 sm:p-6 shadow-2xl"
     >
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <Fuel className="w-4 h-4" />
+      {/* Título de la sección */}
+      <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-700">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center">
+            <Fuel className="w-6 h-6 stroke-[2.5]" />
           </div>
-          <h2 className="text-base font-bold text-white tracking-tight">
-            Registrar Carga de Combustible
-          </h2>
+          <div>
+            <h2 className="text-xl font-extrabold text-white tracking-tight">
+              Nueva Carga
+            </h2>
+            <p className="text-base text-slate-300 font-medium">
+              Método de tanque lleno
+            </p>
+          </div>
         </div>
-        <span className="text-[11px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full font-mono">
-          Tanque lleno
-        </span>
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
-          <span>{error}</span>
+      {/* Mensaje de éxito visible sin palabras técnicas */}
+      {mensajeExito && (
+        <div className="mb-5 p-4 rounded-2xl bg-emerald-950/80 border-2 border-emerald-400 text-emerald-100 flex items-start gap-3 shadow-lg animate-in fade-in">
+          <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="text-base font-bold leading-snug">
+            {mensajeExito}
+          </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        {/* Kilometraje del Tablero */}
+      {/* Mensaje de error visible sin palabras técnicas */}
+      {error && (
+        <div className="mb-5 p-4 rounded-2xl bg-rose-950/80 border-2 border-rose-400 text-rose-100 flex items-start gap-3 shadow-lg">
+          <AlertCircle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
+          <div className="text-base font-bold leading-snug">
+            {error}
+          </div>
+        </div>
+      )}
+
+      {/* Campos de entrada con etiquetas visibles y tamaño legible al sol (>= 16px) */}
+      <div className="space-y-4">
+        {/* 1. Kilometraje del Tablero */}
         <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
-            <Gauge className="w-3.5 h-3.5 text-indigo-400" />
-            Kilometraje del tablero (km)
+          <label
+            htmlFor="campo-kilometraje"
+            className="block text-base font-bold text-white mb-2 flex items-center gap-2"
+          >
+            <Gauge className="w-5 h-5 text-indigo-400" />
+            <span>Kilometraje actual del tablero</span>
           </label>
           <input
+            id="campo-kilometraje"
             type="number"
             step="any"
             inputMode="numeric"
             value={kilometraje}
             onChange={(e) => setKilometraje(e.target.value)}
-            placeholder={ultimoKilometraje ? `Ej: > ${ultimoKilometraje}` : 'Ej: 12450'}
-            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-white text-sm font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+            placeholder={ultimoKilometraje ? `Mayor a ${ultimoKilometraje}` : 'Ejemplo: 12450'}
+            className="w-full min-h-[52px] bg-slate-950 border-2 border-slate-600 focus:border-emerald-400 focus:bg-slate-900 rounded-2xl px-4 text-white text-base font-mono placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 transition"
             required
           />
           {ultimoKilometraje !== undefined && ultimoKilometraje !== null && (
-            <p className="text-[10px] text-slate-500 mt-1">
-              Último registrado: <span className="text-slate-300 font-mono">{ultimoKilometraje.toLocaleString()} km</span>
+            <p className="text-base text-slate-300 mt-1.5 font-medium">
+              Último anotado: <strong className="text-white font-mono">{ultimoKilometraje.toLocaleString()} km</strong>
             </p>
           )}
         </div>
 
-        {/* Galones cargados */}
+        {/* 2. Galones cargados */}
         <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
-            <Fuel className="w-3.5 h-3.5 text-emerald-400" />
-            Galones cargados (gal)
+          <label
+            htmlFor="campo-galones"
+            className="block text-base font-bold text-white mb-2 flex items-center gap-2"
+          >
+            <Fuel className="w-5 h-5 text-emerald-400" />
+            <span>Galones cargados hasta llenar</span>
           </label>
           <input
+            id="campo-galones"
             type="number"
             step="0.001"
             inputMode="decimal"
             value={galones}
             onChange={(e) => setGalones(e.target.value)}
-            placeholder="Ej: 2.5"
-            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-white text-sm font-mono placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+            placeholder="Ejemplo: 2.5"
+            className="w-full min-h-[52px] bg-slate-950 border-2 border-slate-600 focus:border-emerald-400 focus:bg-slate-900 rounded-2xl px-4 text-white text-base font-mono placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 transition"
             required
           />
         </div>
 
-        {/* Monto pagado en dólares */}
+        {/* 3. Monto pagado */}
         <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
-            <DollarSign className="w-3.5 h-3.5 text-amber-400" />
-            Monto pagado (USD $)
+          <label
+            htmlFor="campo-monto"
+            className="block text-base font-bold text-white mb-2 flex items-center gap-2"
+          >
+            <DollarSign className="w-5 h-5 text-amber-400" />
+            <span>Total pagado en dólares ($)</span>
           </label>
           <input
+            id="campo-monto"
             type="number"
             step="0.01"
             inputMode="decimal"
             value={monto}
             onChange={(e) => setMonto(e.target.value)}
-            placeholder="Ej: 9.50"
-            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-white text-sm font-mono placeholder:text-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
+            placeholder="Ejemplo: 9.50"
+            className="w-full min-h-[52px] bg-slate-950 border-2 border-slate-600 focus:border-amber-400 focus:bg-slate-900 rounded-2xl px-4 text-white text-base font-mono placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition"
             required
           />
         </div>
 
-        {/* Fecha */}
+        {/* 4. Fecha de carga */}
         <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-            Fecha de carga
+          <label
+            htmlFor="campo-fecha"
+            className="block text-base font-bold text-white mb-2 flex items-center gap-2"
+          >
+            <Calendar className="w-5 h-5 text-cyan-400" />
+            <span>Fecha de la carga</span>
           </label>
           <input
+            id="campo-fecha"
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition cursor-pointer"
+            className="w-full min-h-[52px] bg-slate-950 border-2 border-slate-600 focus:border-cyan-400 focus:bg-slate-900 rounded-2xl px-4 text-white text-base placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition cursor-pointer"
             required
           />
         </div>
       </div>
 
+      {/* ÚNICO BOTÓN PRINCIPAL DE LA PANTALLA: «Guardar carga» */}
       <button
         type="submit"
-        className="mt-4 w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:scale-[0.99] text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm transition cursor-pointer"
+        className="mt-6 w-full min-h-[58px] bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-lg py-4 px-6 rounded-2xl shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-3 transition cursor-pointer tracking-wide"
       >
-        <PlusCircle className="w-4 h-4" />
-        <span>Guardar Carga de Combustible</span>
+        <PlusCircle className="w-6 h-6 stroke-[3]" />
+        <span>Guardar carga</span>
       </button>
     </form>
   );

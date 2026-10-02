@@ -1,20 +1,12 @@
 /**
  * Módulo de Persistencia Local (localStorage) y Respaldo para RENDIMIENTO.
- * 
- * Gestiona el guardado, lectura, borrado y exportación (CSV / JSON)
- * de la bitácora de cargas de combustible directamente en el dispositivo móvil.
+ * Gestiona el guardado, lectura, borrado y exportación de la bitácora.
  */
 
 import { CargaCombustible } from '../types';
 
 export const CLAVE_LOCALSTORAGE = 'rendimiento_cargas_combustible_v1';
 
-/**
- * 3 cargas de ejemplo representativas para pruebas inmediatas:
- * - Carga 1 (Base): Tanque lleno inicial a 12,150 km.
- * - Carga 2: A 12,310 km (+160 km recorridos, 2.4 gal, $9.10) => 66.7 km/gal, $0.0569/km.
- * - Carga 3: A 12,520 km (+210 km recorridos, 3.0 gal, $11.40) => 70.0 km/gal, $0.0543/km.
- */
 export const CARGAS_EJEMPLO_INICIALES: CargaCombustible[] = [
   {
     id: 'ejemplo_carga_1',
@@ -40,16 +32,13 @@ export const CARGAS_EJEMPLO_INICIALES: CargaCombustible[] = [
 ];
 
 /**
- * 1. LEER: Obtiene las cargas almacenadas en el navegador del dispositivo.
- * Si no existen registros previos, retorna las 3 cargas de ejemplo para que la app sea inmediatamente usable.
+ * 1. LEER: Obtiene las cargas del dispositivo.
  */
 export function obtenerCargas(): CargaCombustible[] {
   try {
     const datos = localStorage.getItem(CLAVE_LOCALSTORAGE);
     if (!datos) {
-      // Primera vez que se abre la app: precargar ejemplos y guardar
-      guardarCargas(CARGAS_EJEMPLO_INICIALES);
-      return CARGAS_EJEMPLO_INICIALES;
+      return [];
     }
     const parseados = JSON.parse(datos);
     return Array.isArray(parseados) ? parseados : [];
@@ -60,7 +49,7 @@ export function obtenerCargas(): CargaCombustible[] {
 }
 
 /**
- * 2. GUARDAR: Serializa la lista completa de cargas a texto JSON en el almacenamiento del cliente.
+ * 2. GUARDAR: Serializa la lista completa de cargas.
  */
 export function guardarCargas(cargas: CargaCombustible[]): void {
   try {
@@ -71,7 +60,7 @@ export function guardarCargas(cargas: CargaCombustible[]): void {
 }
 
 /**
- * 3. BORRAR UNA CARGA: Filtra la carga por ID y persiste el nuevo arreglo resultante.
+ * 3. BORRAR UNA CARGA: Filtra la carga por ID y persiste la lista.
  */
 export function eliminarCarga(id: string): CargaCombustible[] {
   const actuales = obtenerCargas();
@@ -81,7 +70,7 @@ export function eliminarCarga(id: string): CargaCombustible[] {
 }
 
 /**
- * 4. EXPORTAR A JSON: Descarga un archivo .json legible con toda la bitácora.
+ * 4. EXPORTAR A JSON: Descarga un archivo .json legible.
  */
 export function exportarAJson(cargas: CargaCombustible[]): void {
   const jsonStr = JSON.stringify(cargas, null, 2);
@@ -95,7 +84,7 @@ export function exportarAJson(cargas: CargaCombustible[]): void {
 }
 
 /**
- * 5. EXPORTAR A CSV: Descarga un archivo .csv compatible con Excel o Google Sheets.
+ * 5. EXPORTAR A CSV: Descarga un archivo .csv compatible con Excel.
  */
 export function exportarACsv(cargas: CargaCombustible[]): void {
   const encabezados = ['ID', 'Fecha', 'Kilometraje (km)', 'Galones (gal)', 'Monto ($ USD)'];
