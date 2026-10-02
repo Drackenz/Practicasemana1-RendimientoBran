@@ -36,6 +36,16 @@ Aplicación web móvil para personas que utilizan moto o carro todos los días y
    - Estado vacío acogedor con invitación clara a registrar la primera carga.
    - Mensajes de éxito y error visibles, en español coloquial y sin tecnicismos.
 
+6. **Validaciones y Manejo de Errores a Prueba de Balas (M4):**
+   - Bloqueo de campos vacíos y desinfección de entradas no numéricas.
+   - Protección contra galones o montos en cero o negativos.
+   - Control de coherencia en odómetro (mayor al previo y mayor a cero; previene divisiones por cero).
+   - Manejo transparente de primera carga como punto base sin cálculos erróneos.
+   - Restricción de fechas futuras y fechas inválidas.
+   - Límites contra números gigantes o textos desbordantes.
+   - Protección con debounce contra doble clic accidental en el botón de guardar.
+   - Resistencia a fallos de almacenamiento en caso de borrado intempestivo de caché.
+
 ---
 
 ## 🧪 Prueba Manual de 3 Pasos
