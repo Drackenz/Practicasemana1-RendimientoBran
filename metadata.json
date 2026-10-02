@@ -1,0 +1,6 @@
+{
+  "name": "Studio Creator",
+  "description": "Plataforma interactiva para diseñar y construir aplicaciones web modernas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
