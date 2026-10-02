@@ -1,76 +1,84 @@
-# RENDIMIENTO 🏍️🚗
+# RENDIMIENTO
 
-Aplicación web móvil para personas que utilizan moto o carro todos los días y necesitan responder la pregunta: **"¿Mi vehículo rinde igual que el mes pasado?"**
+> Calcula cuánto rinde tu moto o carro por galón y cuánto te cuesta cada kilómetro, y avisa cuándo empezó a rendir menos.
 
----
+## 1. Probala ahora
+- **App publicada:** https://drackenz.github.io/Practicasemana1-RendimientoBran/
+- **Código QR:** ![QR](evidencias/qr.png)
+- **Usuario de prueba:** no requiere (los datos se guardan de forma local en tu dispositivo)
 
-## 🚀 Funcionalidades
+## 2. Capturas
+| Inicio | En uso | Con la IA trabajando |
+|---|---|---|
+| ![](evidencias/E3-celular.png) | ![](evidencias/E1-despues.png) | ![](evidencias/E5-app.png) |
 
-1. **Registro de Cargas de Combustible:**
-   - Fecha de carga.
-   - Odómetro / Kilometraje del tablero.
-   - Galones cargados.
-   - Monto pagado en dólares ($ USD).
+## 3. Qué hace
+- Registra cargas de combustible con fecha, monto, galones y kilometraje.
+- Calcula kilómetros por galón y costo por kilómetro según el método físico de tanque lleno.
+- Muestra un gráfico del rendimiento mes a mes con detección de tendencia.
+- La IA detecta el mes en que cayó el rendimiento y sugiere qué revisar primero, ordenado por costo.
 
-2. **Cálculo de Rendimiento (Método de Tanque Lleno):**
-   - **Km recorridos:** diferencia entre el kilometraje actual y el de la carga previa.
-   - **Rendimiento (km/gal):** $\frac{\text{Km recorridos}}{\text{Galones actuales}}$.
-   - **Costo por km ($/km):** $\frac{\text{Monto pagado}}{\text{Km recorridos}}$.
+## 4. Cómo correrlo en tu máquina
+```bash
+git clone https://github.com/Drackenz/Practicasemana1-RendimientoBran.git
+cd Practicasemana1-RendimientoBran
+# si usa API:
+cp .env.example .env      # y escribí tu propia llave GEMINI_API_KEY
+npm install
+npm run dev
+```
 
-3. **Gráfico de Rendimiento Mes a Mes:**
-   - Visualización interactiva en barras SVG nativas.
-   - Promedio ponderado de rendimiento de cada mes ($\frac{\sum \text{km}}{\sum \text{gal}}$).
-   - Indicador de tendencia (+ o - km/gal vs mes anterior).
-   - Selección interactiva de meses para ver detalle de consumo y costo.
+## 5. Tecnologías
+- **Lenguaje:** TypeScript y JavaScript moderno (ESNext).
+- **Interfaz y diseño:** React 19, Tailwind CSS v4, Lucide React.
+- **Backend Proxy & Servidor:** Express.js y Node.js (`server.ts`) para llamadas seguras y protegidas a la IA.
+- **Persistencia:** `localStorage` nativo del navegador (sin base de datos externa obligatoria).
+- **Modelo de IA:** Gemini 3.8 Flash (`gemini-3.8-flash`) vía SDK oficial `@google/genai` con respuesta estructurada estricta (`responseSchema` en JSON).
 
-4. **Persistencia Local y Respaldo (M2):**
-   - Almacenamiento automático y seguro en `localStorage` del navegador.
-   - Exportación de la bitácora a formato **CSV** (compatible con Excel / Google Sheets).
-   - Exportación a formato **JSON** (para respaldo y migración).
+## 6. La escalera de mejoras
+| Peldaño | Qué cambió | Commit | Evidencia |
+|---|---|---|---|
+| P0 | Versión inicial generada con IA | `90f6678` | E0-inicial.png |
+| M1 | Gráfico de rendimiento mes a mes | `f5d727b` | E1-antes / E1-despues |
+| M2 | Persistencia de la bitácora de cargas | `cdbb2b2` | E2-antes / E2-despues |
+| M3 | Experiencia en celular | `8724918` | E3-celular / E3-vacio |
+| M4 | Validaciones y manejo de errores | `0b7e174` | E4-error.png |
+| M5 | Inteligencia con JSON y diagnóstico Gemini | `df9a673` | E5-json / E5-app / E5-falla |
 
-5. **Experiencia de Uso en Celular (M3):**
-   - Adaptada para pantallas estrechas desde **320 px de ancho** y operable con una sola mano.
-   - Contraste optimizado para lectura bajo el sol en moto/carro; tipografía **nunca menor a 16 px**.
-   - Todos los campos con etiquetas visibles sobre los campos.
-   - Jerarquía visual estricta: un único botón principal destacado (**«Guardar carga»**).
-   - Estado vacío acogedor con invitación clara a registrar la primera carga.
-   - Mensajes de éxito y error visibles, en español coloquial y sin tecnicismos.
+## 7. Prueba con usuarios reales
+| Quién | Qué intentó | Dónde se trabó | Lo que dijo, textual | ¿Corregido? |
+|---|---|---|---|---|
+| Compañero de clase | Ingresar dos cargas consecutivas con el mismo kilometraje | División entre cero en costo/km | «Me dio infinito en el costo por kilómetro y se rompió la tarjeta» | Sí, en M4 |
+| Motociclista del centro | Registrar una carga al mediodía bajo el sol desde su teléfono | Letras pequeñas y poco contraste | «No se lee bien con el reflejo del sol y las letras están muy chicas» | Sí, en M3 |
+| Conductor particular | Registrar una carga comprada en litros | Unidad de volumen fija en galones | «Aquí en la bomba cargamos por litros, me tocó sacar la calculadora» | No, queda pendiente para siguiente versión |
 
-6. **Validaciones y Manejo de Errores a Prueba de Balas (M4):**
-   - Bloqueo de campos vacíos y desinfección de entradas no numéricas.
-   - Protección contra galones o montos en cero o negativos.
-   - Control de coherencia en odómetro (mayor al previo y mayor a cero; previene divisiones por cero).
-   - Manejo transparente de primera carga como punto base sin cálculos erróneos.
-   - Restricción de fechas futuras y fechas inválidas.
-   - Límites contra números gigantes o textos desbordantes.
-   - Protección con debounce contra doble clic accidental en el botón de guardar.
-   - Resistencia a fallos de almacenamiento en caso de borrado intempestivo de caché.
+## 8. Declaración de uso de inteligencia artificial
+- **Herramienta y modelo:** Google Gemini 3.8 Flash (`gemini-3.8-flash`) y Google AI Studio.
+- **Qué hizo la IA:** Generó la estructura reactiva de componentes, apoyó en el diseño accesible de alto contraste y procesa el análisis mecánico estructurado en JSON.
+- **Qué hice yo:** Diseñé los casos de prueba de QA, supervisé los criterios de aceptación mecánicos, implementé la protección del backend proxy y validé los límites numéricos.
+- **Qué verifiqué y cómo:** Verifiqué que la primera carga funcione estrictamente como punto base (sin calcular km/gal erróneos); probé la persistencia en `localStorage` al recargar; y verifiqué que las fallas de red no bloqueen la app.
+- **Qué corregí de lo que la IA entregó:** Corregí el intento inicial de calcular rendimiento en la primera carga sin datos previos; ajusté el tamaño de fuente mínimo a 16 px para evitar el auto-zoom intrusivo de iOS; y separé la API key en el backend para evitar su exposición pública.
 
-7. **Diagnóstico Inteligente con Gemini AI (M5):**
-   - Detección automática del mes con caída de rendimiento.
-   - Respuesta estructurada estricta con `responseSchema` (JSON).
-   - Lista priorizada de revisiones mecánicas ordenadas de **menor a mayor costo**.
-   - Ejecución segura desde el servidor (`server.ts`) protegiendo la clave `GEMINI_API_KEY`.
-   - Manejo de fallos y botón de pruebas con datos simulados sin gastar llamadas.
+## 9. Tarjeta anti-alucinación
+| Afirmación de la IA | Cómo la verifiqué | Resultado |
+|---|---|---|
+| "Se puede calcular el rendimiento desde la primera carga dividiendo el odómetro entre galones" | Revisé la física del método de tanque lleno: no sabemos cuántos km rindió ese combustible hasta volver a llenar | Falso. La primera carga solo fija el punto de partida. Corregido en `calculos.ts`. |
+| "Guardar la GEMINI_API_KEY en variables de cliente (VITE_) es seguro para producción" | Abrí las herramientas de desarrollo del navegador (DevTools / Red / Fuentes) | Falso. La clave se puede extraer del código cliente. Se migró a proxy backend en `server.ts`. |
+| "Un kilometraje menor al anterior es un error de digitación que debe bloquearse" | Verifiqué el funcionamiento estándar de odómetros mecánicos y digitales | Verdadero. Se bloqueó para evitar distancias negativas y desbordamientos. |
 
----
+## 10. Limitaciones conocidas
+- Solo admite galones y dólares estadounidenses ($ USD); aún no incluye conversión a litros ni monedas locales.
+- Bitácora para un solo vehículo activo en el navegador (no admite perfiles simultáneos para flota).
+- La llamada a la IA requiere conexión a internet (aunque dispone de modo de prueba simulado para desarrollo y emergencias).
 
-## 🧪 Prueba Manual de 3 Pasos
+## 11. Próximo paso
+- Selector dinámico de unidades (Litros / Galones y Kilómetros / Millas).
+- Gestión multivehículo (guardar moto y carro por separado en la misma cuenta).
+- Exportación a reporte PDF para presentar en mantenimientos mecánicos.
+- PWA instalable con Service Worker para funcionamiento 100% offline.
 
-1. **Paso 1: Estado inicial**
-   - Registra una primera carga de referencia (ej. `12,450 km`, `$8.50`, `2.2 gal`, `2026-09-15`).
-   - El sistema guarda la base sin calcular km/gal erróneos y el gráfico avisa que se requieren 2 cargas consecutivas.
-2. **Paso 2: Rendimiento de la segunda carga**
-   - Registra la segunda carga (ej. `12,610 km`, `$9.50`, `2.5 gal`, `2026-09-22`).
-   - El historial muestra: **160 km recorridos**, **64.0 km/gal** y **$0.0594 / km**.
-   - El gráfico muestra la barra de **Sep 2026** con **64.0 km/gal**.
-3. **Paso 3: Comparativa mes a mes**
-   - Registra una carga en el mes siguiente (ej. `12,850 km`, `$12.00`, `3.2 gal`, `2026-10-05`).
-   - El gráfico despliega dos barras consecutivas (**Sep 2026** y **Oct 2026** a 75.0 km/gal) y el indicador de mejora **"+11.0 km/gal vs mes anterior"**.
+## 12. Autor
+Brandon · 3.er año Desarrollo de Software · INDEL · octubre de 2026
 
----
-
-## 🛡️ Prevención de Errores Matemáticos
-- **No promedia promedios:** la agregación mensual suma km totales y divide entre galones totales.
-- **División por cero protegida:** validaciones si los galones son $\le 0$ o si el odómetro es menor/igual al anterior.
-- **Orden cronológico garantizado:** si el usuario ingresa una carga atrasada, se recalcula automáticamente comparando con la carga contigua en odómetro.
+## 13. Licencia
+MIT License (Código abierto para la comunidad estudiantil y motera).
