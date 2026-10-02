@@ -23,6 +23,12 @@ Aplicación web móvil para personas que utilizan moto o carro todos los días y
    - Indicador de tendencia (+ o - km/gal vs mes anterior).
    - Selección interactiva de meses para ver detalle de consumo y costo.
 
+4. **Persistencia Local y Respaldo (M2):**
+   - Almacenamiento automático y seguro en `localStorage` del navegador.
+   - 3 cargas de ejemplo iniciales precargadas para probar la app al instante.
+   - Exportación de la bitácora a formato **CSV** (compatible con Excel / Google Sheets).
+   - Exportación a formato **JSON** (para respaldo y migración).
+
 ---
 
 ## 🧪 Prueba Manual de 3 Pasos
