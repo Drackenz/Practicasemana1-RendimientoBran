@@ -1,1 +1,23 @@
+ROL: Sos un desarrollador senior de aplicaciones web.
+prompt de inicializacion:
+CONTEXTO: Estoy construyendo una app llamada RENDIMIENTO para una persona que usa
+moto o carro todos los días. El problema que resuelve es: no se sabe si la moto
+rinde igual que el mes pasado.
 
+TAREA: Generá la primera versión funcional, con estas tres funciones y nada más:
+1. Registrar una carga de combustible con fecha, monto pagado en dólares,
+   galones cargados y kilometraje del tablero.
+2. Calcular kilómetros por galón y costo por kilómetro, usando los km recorridos
+   entre una carga y la anterior (método de tanque lleno).
+3. Mostrar un gráfico simple del rendimiento (km por galón) mes a mes.
+
+RESTRICCIONES: en español, sin librerías de pago, sin login, sin base de datos en
+servidor todavía. Que se vea bien en un celular. Código comentado en los puntos
+donde alguien vaya a equivocarse (por ejemplo, la división entre km recorridos).
+
+FORMATO DE SALIDA: los archivos completos, cada uno con su nombre, y al final una
+lista de lo que NO hiciste y por qué.
+
+CRITERIO DE ACEPTACIÓN: abro la app, registro dos cargas (por ejemplo, 12,450 km y
+12,610 km con 2.5 galones y $9.50 la segunda) y veo el rendimiento en km por
+galón y el costo por km, sin ningún error en la consola.
