@@ -1,6 +1,7 @@
 /**
  * APLICACIÓN: RENDIMIENTO
- * M3: Experiencia de uso en celular (mobile-first, 320px+, alto contraste, texto >= 16px).
+ * Integración con Gemini AI: Diagnóstico de caídas de rendimiento
+ * y priorización de revisiones mecánicas de menor a mayor costo.
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -9,6 +10,7 @@ import { CargaCombustible } from './types';
 import { FormularioCarga } from './components/FormularioCarga';
 import { ListaCargas } from './components/ListaCargas';
 import { GraficoMensual } from './components/GraficoMensual';
+import { DiagnosticoIA } from './components/DiagnosticoIA';
 import { calcularRendimientoCargas, agruparRendimientoPorMes } from './utils/calculos';
 import {
   obtenerCargas,
@@ -37,7 +39,7 @@ export default function App() {
     return calcularRendimientoCargas(cargas);
   }, [cargas]);
 
-  // Datos mensuales para el gráfico
+  // Datos mensuales para el gráfico y para el análisis de Gemini
   const datosMensuales = useMemo(() => {
     return agruparRendimientoPorMes(cargasCalculadas);
   }, [cargasCalculadas]);
@@ -56,7 +58,6 @@ export default function App() {
     };
     setCargas((prev) => [...prev, registro]);
 
-    // Mensaje de éxito claro sin tecnicismos
     setMensajeExito('¡Carga guardada con éxito! Ya puedes ver el cálculo actualizado.');
     setTimeout(() => {
       setMensajeExito(null);
@@ -87,9 +88,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col font-sans selection:bg-emerald-400 selection:text-black">
-      {/* 
-        Encabezado accesible con texto >= 16px y botones secundarios 
-      */}
+      {/* Encabezado accesible con texto >= 16px y botones secundarios */}
       <header className="border-b-2 border-slate-700 bg-slate-950 sticky top-0 z-40">
         <div className="max-w-lg mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -118,9 +117,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 
-        Contenedor Mobile-First: adaptado desde 320px de ancho para uso con una sola mano 
-      */}
+      {/* Contenedor Mobile-First: adaptado desde 320px de ancho */}
       <main className="flex-1 max-w-lg mx-auto px-3.5 sm:px-4 py-6 w-full space-y-7">
         {/* 1. Formulario de registro (con el ÚNICO botón principal de la pantalla: «Guardar carga») */}
         <section aria-label="Formulario de Carga">
@@ -134,6 +131,11 @@ export default function App() {
         {/* 3. Gráfico de rendimiento mes a mes */}
         <section aria-label="Gráfico de Rendimiento">
           <GraficoMensual datosMensuales={datosMensuales} />
+        </section>
+
+        {/* 4. Diagnóstico inteligente con Gemini AI */}
+        <section aria-label="Diagnóstico Mecánico con Gemini">
+          <DiagnosticoIA datosMensuales={datosMensuales} />
         </section>
 
         {/* 2. Lista de cargas o Estado Vacío */}
@@ -154,9 +156,7 @@ export default function App() {
         </footer>
       </main>
 
-      {/* 
-        Modal / Menú de opciones secundarias (Respaldar, Exportar, Restaurar) 
-      */}
+      {/* Modal / Menú de opciones secundarias (Respaldar, Exportar, Restaurar) */}
       {mostrarOpciones && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-3">
           <div className="bg-slate-900 border-2 border-slate-600 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 animate-in fade-in slide-in-from-bottom">
@@ -166,7 +166,7 @@ export default function App() {
               </h3>
               <button
                 onClick={() => setMostrarOpciones(false)}
-                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800"
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800 cursor-pointer"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -225,7 +225,7 @@ export default function App() {
 
             <button
               onClick={() => setMostrarOpciones(false)}
-              className="mt-2 w-full min-h-[48px] py-3 rounded-2xl bg-slate-800 border border-slate-700 text-base font-bold text-slate-300 text-center block"
+              className="mt-2 w-full min-h-[48px] py-3 rounded-2xl bg-slate-800 border border-slate-700 text-base font-bold text-slate-300 text-center block cursor-pointer"
             >
               Cerrar
             </button>

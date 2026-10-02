@@ -46,6 +46,13 @@ Aplicación web móvil para personas que utilizan moto o carro todos los días y
    - Protección con debounce contra doble clic accidental en el botón de guardar.
    - Resistencia a fallos de almacenamiento en caso de borrado intempestivo de caché.
 
+7. **Diagnóstico Inteligente con Gemini AI (M5):**
+   - Detección automática del mes con caída de rendimiento.
+   - Respuesta estructurada estricta con `responseSchema` (JSON).
+   - Lista priorizada de revisiones mecánicas ordenadas de **menor a mayor costo**.
+   - Ejecución segura desde el servidor (`server.ts`) protegiendo la clave `GEMINI_API_KEY`.
+   - Manejo de fallos y botón de pruebas con datos simulados sin gastar llamadas.
+
 ---
 
 ## 🧪 Prueba Manual de 3 Pasos
