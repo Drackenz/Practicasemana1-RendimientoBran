@@ -78,7 +78,7 @@ npm run dev
 - PWA instalable con Service Worker para funcionamiento 100% offline.
 
 ## 12. Autor
-Brandon · 3.er año Desarrollo de Software · INDEL · octubre de 2026
+Steven Rene Bran Alas · 3.er año Desarrollo de Software · INDEL · octubre de 2026
 
 ## 13. Licencia
 MIT License (Código abierto para la comunidad estudiantil y motera).
